@@ -68,7 +68,13 @@ body:not(.s-play) .top,body:not(.s-play) #board,body:not(.s-play) #msg,body:not(
 .evc{flex:1;max-width:150px;border:3px dashed #d9c3a0;border-radius:14px;background:var(--cell);text-align:center;padding:12px 6px;font-weight:700;font-size:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
 .evc span{font-size:38px;line-height:1.1}.evc small{font-weight:500;font-size:11px;opacity:.75}
 .evc.promo{aspect-ratio:746/1040;max-width:110px;border-color:#8a5cf6}
-</style></head><body class="s-lobby">
+body.s-auth #scAuth{display:flex}
+.fm{width:100%;display:flex;flex-direction:column;gap:8px}
+.fm input{font:inherit;font-size:16px;padding:12px;border:2px solid #d9c3a0;border-radius:12px;background:#fff;color:var(--ink);width:100%}
+.tabs{display:flex;gap:6px;width:100%}.tabs .btn{flex:1;padding:9px}.tabs .btn.on{background:#8a5cf6;color:#fff;border-color:#8a5cf6}
+.err{color:#d33;min-height:1.3em;font-size:13px;text-align:center;width:100%}
+.who{font-size:13px;opacity:.85}
+</style></head><body class="s-auth">
 <div class="top">
   <div class="pill ai" id="sAI">บอท<b>0</b></div>
   <div class="mid" id="mid"></div>
@@ -85,12 +91,24 @@ body:not(.s-play) .top,body:not(.s-play) #board,body:not(.s-play) #msg,body:not(
 <div class="ov" id="ovCard" onclick="this.classList.remove('show')"><div class="box" id="cardBox" style="text-align:center;width:min(100%,300px)"></div></div>
 <div class="ov" id="ovPick"><div class="box" id="pickBox"></div></div>
 <div class="ov" id="ovEnd"><div class="box" id="end" style="text-align:center"></div></div>
-<div id="scLobby" class="scr"><h1 class="ttl">Monsnatch</h1><div class="coin">🪙 <b id="coinN">0</b> เหรียญ</div>
+<div id="scAuth" class="scr"><h1 class="ttl">Monsnatch</h1>
+<div class="tabs"><button class="btn alt on" id="tLogin">เข้าสู่ระบบ</button><button class="btn alt" id="tReg">สมัครบัญชี</button></div>
+<div class="fm">
+<input id="aUser" placeholder="ชื่อผู้ใช้" autocomplete="username" maxlength="20" autocapitalize="off" autocorrect="off" spellcheck="false">
+<input id="aPass" type="password" placeholder="รหัสผ่าน (อย่างน้อย 6 ตัว)" autocomplete="current-password">
+<input id="aPass2" type="password" placeholder="ยืนยันรหัสผ่าน" autocomplete="new-password" style="display:none">
+</div>
+<div class="err" id="aErr"></div>
+<button class="btn big" id="aGo">เข้าสู่ระบบ</button>
+<button class="btn alt" id="aGuest" style="width:100%;flex:none">เล่นแบบผู้เยี่ยมชม</button>
+<p class="inf">บัญชีและความคืบหน้าบันทึกไว้ในเบราว์เซอร์เครื่องนี้<br>ยังไม่สามารถใช้ข้ามเครื่องหรือกู้รหัสผ่านได้</p></div>
+<div id="scLobby" class="scr"><h1 class="ttl">Monsnatch</h1><div class="who" id="who"></div><div class="coin">🪙 <b id="coinN">0</b> เหรียญ</div>
 <button class="btn big" id="lPlay">⚔️ เล่นกับบอท</button>
 <button class="btn big" id="lPack" style="background:#ff8a3d">🎁 เปิดซองการ์ด</button>
 <button class="btn big" id="lDeck" style="background:#2f8cff">🃏 จัดเด็ค</button>
 <button class="btn big" id="lEvent" style="background:#e0467c">🎉 Event<br><small>🔒 Coming Soon</small></button>
-<button class="btn alt" id="lHelp" style="width:100%;flex:none">📖 กฎการเล่น</button><p id="lInfo" class="inf"></p></div>
+<button class="btn alt" id="lHelp" style="width:100%;flex:none">📖 กฎการเล่น</button>
+<button class="btn alt" id="lOut" style="width:100%;flex:none"></button><p id="lInfo" class="inf"></p></div>
 <div id="scPacks" class="scr"><h2 class="ttl2">🎁 ซองการ์ด</h2><div class="coin">🪙 <b id="coinP">0</b></div>
 <button class="btn big" id="b1">1 ซอง (10 ใบ)<br><small>150 🪙</small></button>
 <button class="btn big" id="b5" style="background:#ff8a3d">5 ซอง (50 ใบ)<br><small>700 🪙 · ถูกกว่าซื้อเดี่ยว 50</small></button>
@@ -1053,8 +1071,8 @@ $('help').innerHTML='<h2>วิธีเล่น (กติกา Monsnatch)</h
 const CM={},CI={};CARDS.forEach((c,i)=>{CM[c.n]=c;CI[c.n]=i});
 const RAR={};(()=>{const sc=c=>c.p+c.s.length*.7+(c.fx?2.5:0);const o=CARDS.map((c,i)=>[sc(c)+i*1e-4,c.n]).sort((a,b)=>a[0]-b[0]);o.forEach((x,i)=>{const f=(i+1)/o.length;RAR[x[1]]=[.38,.69,.87,.96,1].findIndex(t=>f<=t)+1})})();
 const POOL=[0,1,2,3,4,5].map(r=>CARDS.filter(c=>RAR[c.n]===r));
-const RATE=[70,20,6,3,1],PK1=150,PK5=700,DKMAX=25,SV='monsnatch_v1',STAR=n=>'★'.repeat(n);
-let P;
+const RATE=[70,20,6,3,1],PK1=150,PK5=700,DKMAX=25,STAR=n=>'★'.repeat(n);
+let P,SV='monsnatch_v1';
 function save(){try{localStorage.setItem(SV,JSON.stringify(P))}catch(e){}}
 function load(){try{P=JSON.parse(localStorage.getItem(SV))}catch(e){P=null}
   if(!P||typeof P.coins!=='number'||!P.inv){const own=shuf(POOL[1]).slice(0,10).map(c=>c.n);P={coins:1000,inv:{},deck:own.slice()};own.forEach(n=>P.inv[n]=1);save()}
@@ -1066,7 +1084,7 @@ function botDeck(lv){const d=[];let t=0;
   const L=!lv||lv==='easy'?shuf(CARDS):CARDS.map(c=>[cval(c)+Math.random()*(lv==='hard'?6:1.2),c]).sort((a,b)=>b[0]-a[0]).map(x=>x[1]); // Easy: สุ่ม · Hard: เอนเอียงใบแรง · Extreme: เด็คแรงสุดตามโควตาดาว
   for(const c of L){if(d.length===10)break;if(t+RAR[c.n]+(9-d.length)<=DKMAX){d.push({...c});t+=RAR[c.n]}}return d}
 function setScr(s){document.body.className='s-'+s}
-function lobby(){setScr('lobby');$('coinN').textContent=P.coins;const ok=deckOK();$('lPlay').disabled=!ok;
+function lobby(){setScr('lobby');$('who').textContent=ME?'👤 '+ME:'👤 ผู้เยี่ยมชม (ยังไม่ได้เข้าสู่ระบบ)';$('lOut').textContent=ME?'🚪 ออกจากระบบ':'🔑 เข้าสู่ระบบ / สมัครบัญชี';$('coinN').textContent=P.coins;const ok=deckOK();$('lPlay').disabled=!ok;
   $('lInfo').textContent=ok?'เด็คพร้อมแล้ว ✓ ('+stars(P.deck)+'/'+DKMAX+' ★)':'⚠️ เด็คยังไม่พร้อม: ต้องมี 10 ใบ และดาวรวมไม่เกิน '+DKMAX+' (ตอนนี้ '+P.deck.length+'/10 ใบ · '+stars(P.deck)+' ★)'}
 function goLobby(){if(G){G.left=true;G.over=true}$('ovEnd').classList.remove('show');lobby()}
 function packs(){setScr('packs');$('coinP').textContent=P.coins;$('b1').disabled=P.coins<PK1;$('b5').disabled=P.coins<PK5}
@@ -1115,5 +1133,40 @@ $('b1').onclick=()=>buy(1);$('b5').onclick=()=>buy(5);$('pBack').onclick=lobby;$
 $('dClr').onclick=()=>{P.deck=[];save();decks()};
 $('bHome').onclick=()=>{if(confirm('ออกจากเกมนี้แล้วกลับล็อบบี้? (จะไม่ได้เหรียญ)'))goLobby()};
 $('ovAct').onclick=e=>{if(e.target.id==='ovAct')$('ovAct').classList.remove('show')};
-load();lobby();
+/* ===== ระบบบัญชี (เก็บในเบราว์เซอร์) ===== */
+const AK='monsnatch_accts',SK='monsnatch_session';let ME=null,REG=false;
+const hex=b=>[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
+async function hashPw(pw,salt){const e=new TextEncoder(),k=await crypto.subtle.importKey('raw',e.encode(pw),'PBKDF2',false,['deriveBits']);
+  return hex(await crypto.subtle.deriveBits({name:'PBKDF2',salt:e.encode(salt),iterations:150000,hash:'SHA-256'},k,256))}
+function accts(){try{return JSON.parse(localStorage.getItem(AK))||{}}catch(e){return {}}}
+function authMode(r){REG=r;$('tLogin').classList.toggle('on',!r);$('tReg').classList.toggle('on',r);
+  $('aPass2').style.display=r?'':'none';$('aPass').autocomplete=r?'new-password':'current-password';
+  $('aGo').textContent=r?'สมัครบัญชี':'เข้าสู่ระบบ';$('aErr').textContent=''}
+function showAuth(){setScr('auth');authMode(false);$('aUser').value=$('aPass').value=$('aPass2').value=''}
+function enter(u){ME=u;SV=u?'monsnatch_v1_u_'+u.toLowerCase():'monsnatch_v1';
+  try{localStorage.setItem(SK,u||'#guest')}catch(e){}load();lobby()}
+async function authGo(){const u=$('aUser').value.trim(),p=$('aPass').value,E=$('aErr');E.textContent='';
+  if(!/^[A-Za-z0-9_ก-๙]{3,20}$/.test(u)){E.textContent='ชื่อผู้ใช้ 3–20 ตัว (ไทย/อังกฤษ/ตัวเลข/_ เท่านั้น)';return}
+  if(p.length<6){E.textContent='รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร';return}
+  if(!(window.crypto&&crypto.subtle)){E.textContent='เบราว์เซอร์นี้ไม่รองรับ (ต้องเปิดผ่าน https)';return}
+  const A=accts(),k=u.toLowerCase();$('aGo').disabled=true;
+  try{
+    if(REG){
+      if(p!==$('aPass2').value){E.textContent='รหัสผ่านสองช่องไม่ตรงกัน';return}
+      if(A[k]){E.textContent='ชื่อนี้ถูกใช้แล้ว';return}
+      const salt=hex(crypto.getRandomValues(new Uint8Array(16)));
+      if(!Object.keys(A).length){const g=localStorage.getItem('monsnatch_v1');if(g)localStorage.setItem('monsnatch_v1_u_'+k,g)} // บัญชีแรกรับความคืบหน้าเดิมของผู้เยี่ยมชมไปด้วย
+      A[k]={u:u,salt:salt,h:await hashPw(p,salt),t:Date.now()};
+      localStorage.setItem(AK,JSON.stringify(A));enter(u)
+    }else{
+      const a=A[k];if(!a||a.h!==await hashPw(p,a.salt)){E.textContent='ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง';return}
+      enter(a.u)}
+  }catch(e){E.textContent='เกิดข้อผิดพลาด ลองใหม่อีกครั้ง'}
+  finally{$('aGo').disabled=false}}
+function logout(){if(ME&&!confirm('ออกจากระบบ?'))return;try{localStorage.removeItem(SK)}catch(e){}ME=null;showAuth()}
+$('tLogin').onclick=()=>authMode(false);$('tReg').onclick=()=>authMode(true);
+$('aGo').onclick=authGo;$('aGuest').onclick=()=>enter(null);$('lOut').onclick=logout;
+['aUser','aPass','aPass2'].forEach(id=>$(id).addEventListener('keydown',e=>{if(e.key==='Enter')authGo()}));
+(function(){let s=null;try{s=localStorage.getItem(SK)}catch(e){}
+  if(s==='#guest')enter(null);else if(s&&accts()[s.toLowerCase()])enter(accts()[s.toLowerCase()].u);else showAuth()})();
 </script></body></html>
