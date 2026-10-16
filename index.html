@@ -154,6 +154,9 @@ body.s-index #scIndex{display:flex}
 #cMsg{min-height:1.3em;font-size:13px;text-align:center;width:100%}
 #ixTabs .btn{padding:6px 2px;font-size:13px}
 .ixh{width:100%;margin:8px 0 2px;font-size:16px}.ixh small{font-weight:500;font-size:11px;opacity:.8}
+body.s-trade #scTrade{display:flex}
+.tl.pick .card{box-shadow:0 0 0 3px #2f8cff,0 0 8px 2px #2f8cff}
+#trCode{font-size:30px;letter-spacing:5px}
 </style></head><body class="s-auth">
 <div class="top">
   <div class="pill ai" id="sAI">บอท<b>0</b></div>
@@ -186,6 +189,7 @@ body.s-index #scIndex{display:flex}
 <button class="btn big" id="lPlay">⚔️ เล่นกับบอท</button>
 <button class="btn big" id="lPack" style="background:#ff8a3d">🎁 เปิดซองการ์ด</button>
 <button class="btn big" id="lDeck" style="background:#2f8cff">🃏 จัดเด็ค</button>
+<button class="btn big" id="lTrade" style="background:#16a085">🤝 เทรดกับเพื่อน</button>
 <button class="btn big" id="lEvent" style="background:#e0467c">🎉 Event<br><small>🔒 Coming Soon</small></button>
 <div class="cdr"><input id="cIn" placeholder="ใส่โค้ด" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="40"><button class="btn" id="cGo">ใช้โค้ด</button></div><div id="cMsg"></div>
 <button class="btn alt" id="lIdx" style="width:100%;flex:none">📖 ดัชนีการ์ด</button>
@@ -213,6 +217,20 @@ body.s-index #scIndex{display:flex}
 <p class="inf">ทุกซองมี 10 ใบ: ใบที่ 1-5 = ★1 · ใบที่ 6-8 = ★2 · ใบที่ 9 = ★3<br>ใบที่ 10 สุ่ม ★1 70% · ★2 20% · ★3 6% · ★4 3% · ★5 1%<br>การ์ดสีเทา = ยังไม่มี (แตะเพื่อดูได้)</p>
 <div class="tabs" id="ixTabs"></div><div id="ixList" style="width:100%"></div>
 <button class="btn alt" id="ixBack" style="width:100%;flex:none">← กลับ</button></div>
+<div id="scTrade" class="scr"><h2 class="ttl2">🤝 เทรดกับเพื่อน</h2>
+<div id="trMsg" class="inf" style="min-height:1.3em"></div>
+<div id="trConn" style="width:100%;display:flex;flex-direction:column;gap:10px">
+<button class="btn big" id="trMk" style="background:#2f8cff;width:100%;flex:none">🏠 สร้างห้อง<br><small>ได้รหัสห้องไปให้เพื่อน</small></button>
+<div id="trHostBox" style="display:none;text-align:center"><div class="coin" id="trCode"></div></div>
+<div class="cdr"><input id="trIn" placeholder="รหัสห้องของเพื่อน" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" maxlength="8"><button class="btn" id="trGo">เข้าห้อง</button></div>
+<p class="inf">ทั้งสองคนต้องออนไลน์พร้อมกัน · คนหนึ่งสร้างห้อง อีกคนใส่รหัสห้อง<br>ต่างเครื่องกันได้ ต้องต่ออินเทอร์เน็ต</p></div>
+<div id="trRoom" style="display:none;width:100%">
+<h3 class="ixh">🫵 ข้อเสนอของคุณ</h3><div class="tg" id="trMine"></div>
+<h3 class="ixh">🤝 ข้อเสนอของเพื่อน</h3><div class="tg" id="trTheirs"></div>
+<div id="trSt2" class="inf" style="min-height:1.3em;font-weight:700;margin:8px 0"></div>
+<button class="btn big" id="trOk" style="width:100%;background:#16a085">✅ ยืนยันเทรด</button>
+<h3 class="ixh">🎒 คลังของคุณ <small>(แตะเพื่อเสนอ/เอาออก · สูงสุด 10 ใบ)</small></h3><div class="tg" id="trInv"></div></div>
+<button class="btn alt" id="trBack" style="width:100%;flex:none">← ออกจากห้อง / กลับล็อบบี้</button></div>
 <div class="ov" id="ovAct"><div class="box" id="actBox" style="text-align:center;width:min(100%,300px)"></div></div>
 <div class="ov" id="ovOpen"><div id="opHdr"></div><div id="opArena"><div id="opPk" class="gone"><div class="opPp opPb"></div><div class="opPp opPt"></div><div class="opBeam"></div></div><div id="opSt"></div><div id="opFx"></div></div><div id="opHint"></div><button class="btn alt" id="opSkip">ข้ามทั้งหมด ⏭</button><div id="opFlash"></div></div>
 <div class="ov" id="ovPack"><div class="box" id="packBox" style="text-align:center;width:min(100%,440px)"></div></div>
@@ -1245,6 +1263,63 @@ function ixv(i){const c=CARDS[i],o=P.inv[c.n]||0;
   $('actBox').innerHTML='<img src="'+c.img+'" style="width:100%;border-radius:12px"><p><b>'+c.n+'</b> · '+STAR(RAR[c.n])+' · พลัง '+c.p+' · ธาตุ'+TH[c.e]+'</p>'+(c.txt?'<p style="text-align:left">'+c.txt+'</p>':'')+'<p>'+(o?'มีแล้ว '+o+' ใบ':'ยังไม่มี')+'</p>';
   $('ovAct').classList.add('show')}
 $('pIdx').onclick=()=>indexScr('packs');$('lIdx').onclick=()=>indexScr('lobby');$('ixBack').onclick=()=>IXF==='packs'?packs():lobby();
+/* ===== เทรดกับเพื่อน (PeerJS · เชื่อมตรงเครื่องต่อเครื่อง) ===== */
+const TR={peer:null,conn:null,mine:[],theirs:[],okMe:false,okThem:false,done:false},TRP='monsnatch-trade-';
+const trSame=(a,b)=>a.length===b.length&&a.every(x=>b.includes(x));
+function trSt(t,e){const m=$('trMsg');m.style.color=e?'#d33':'#2a9d4a';m.textContent=t||''}
+function trLoad(cb){if(window.Peer)return cb();const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js';s.onload=cb;s.onerror=()=>trSt('โหลดระบบเชื่อมต่อไม่ได้ (ต้องต่ออินเทอร์เน็ต)',1);document.head.appendChild(s)}
+function trClose(){try{TR.conn&&TR.conn.close()}catch(e){}try{TR.peer&&TR.peer.destroy()}catch(e){}
+  TR.peer=TR.conn=null;TR.mine=[];TR.theirs=[];TR.okMe=false;TR.okThem=false;TR.done=false;
+  $('trConn').style.display='flex';$('trRoom').style.display='none';$('trHostBox').style.display='none'}
+function trScr(){trClose();trSt('');setScr('trade')}
+function trCode(){const a='ABCDEFGHJKMNPQRSTUVWXYZ23456789';let s='';for(let i=0;i<6;i++)s+=a[Math.floor(Math.random()*a.length)];return s}
+function trHost(){trClose();trSt('กำลังสร้างห้อง...');
+  trLoad(()=>{const code=trCode(),p=new Peer(TRP+code);TR.peer=p;
+    p.on('open',()=>{$('trCode').textContent=code;$('trHostBox').style.display='';trSt('ส่งรหัสห้องให้เพื่อน แล้วรอเพื่อนเข้าห้อง...')});
+    p.on('connection',c=>{if(TR.conn){c.close();return}trBind(c)});
+    p.on('error',e=>{if(e.type==='unavailable-id'){trHost();return}trSt('เชื่อมต่อไม่สำเร็จ ('+e.type+')',1)})})}
+function trJoin(){const code=$('trIn').value.trim().toUpperCase();if(code.length<4){trSt('ใส่รหัสห้องของเพื่อนก่อน',1);return}
+  trClose();trSt('กำลังเชื่อมต่อ...');
+  trLoad(()=>{const p=new Peer();TR.peer=p;
+    p.on('open',()=>{trBind(p.connect(TRP+code,{reliable:true}));setTimeout(()=>{if(TR.conn&&!TR.conn.open)trSt('เชื่อมต่อนานผิดปกติ ตรวจรหัสห้องอีกครั้ง',1)},12000)});
+    p.on('error',e=>trSt(e.type==='peer-unavailable'?'ไม่พบห้องนี้ ตรวจรหัสอีกครั้ง':'เชื่อมต่อไม่สำเร็จ ('+e.type+')',1))})}
+function trBind(c){TR.conn=c;
+  const op=()=>{$('trConn').style.display='none';$('trRoom').style.display='';trSt('เชื่อมต่อกับเพื่อนแล้ว 🎉 เลือกการ์ดที่จะแลกกัน');trDraw()};
+  if(c.open)op();else c.on('open',op);
+  c.on('data',trRecv);
+  c.on('close',()=>{TR.okMe=false;TR.okThem=false;if(!TR.done)trSt('เพื่อนหลุดจากการเชื่อมต่อ',1);else trSt('เพื่อนออกจากห้องแล้ว',1);trDraw()});
+  c.on('error',()=>trSt('การเชื่อมต่อมีปัญหา',1))}
+function trSend(o){try{TR.conn&&TR.conn.open&&TR.conn.send(o)}catch(e){}}
+function trNames(a){return Array.isArray(a)?[...new Set(a.filter(n=>typeof n==='string'&&CM[n]))].slice(0,10):[]}
+function trRecv(m){if(!m||typeof m!=='object')return;
+  if(m.t==='offer'){TR.theirs=trNames(m.c);TR.okMe=false;TR.okThem=false;TR.done=false;trDraw()}
+  else if(m.t==='cancel'){TR.okThem=false;trDraw()}
+  else if(m.t==='ok'){if(trSame(trNames(m.m),TR.theirs)&&trSame(trNames(m.y),TR.mine)){TR.okThem=true;trDraw();trFinal()}}}
+function trTog(i){if(TR.done||!TR.conn||!TR.conn.open)return;const n=CARDS[i].n,k=TR.mine.indexOf(n);
+  if(k>=0)TR.mine.splice(k,1);else{if(!P.inv[n])return;if(TR.mine.length>=10){trSt('เสนอได้สูงสุด 10 ใบ',1);return}TR.mine.push(n)}
+  TR.okMe=false;TR.okThem=false;trSt('');trSend({t:'offer',c:TR.mine});trDraw()}
+function trOk(){if(TR.done){TR.mine=[];TR.theirs=[];TR.okMe=false;TR.okThem=false;TR.done=false;trSt('เริ่มเทรดรอบใหม่');trSend({t:'offer',c:[]});trDraw();return}
+  if(TR.okMe){TR.okMe=false;trSend({t:'cancel'});trDraw();return}
+  if(!TR.mine.length&&!TR.theirs.length)return;
+  TR.okMe=true;trSend({t:'ok',m:TR.mine,y:TR.theirs});trDraw();trFinal()}
+function trFinal(){if(!TR.okMe||!TR.okThem||TR.done)return;
+  if(!TR.mine.every(n=>P.inv[n]>0)){trSt('การ์ดของคุณไม่พอ เทรดไม่สำเร็จ',1);TR.okMe=false;TR.okThem=false;trDraw();return}
+  const give=TR.mine.slice(),get=TR.theirs.slice();
+  give.forEach(n=>{P.inv[n]--;if(P.inv[n]<=0)delete P.inv[n]});
+  get.forEach(n=>P.inv[n]=(P.inv[n]||0)+1);
+  P.deck=P.deck.filter(n=>P.inv[n]>0);save();
+  TR.done=true;TR.mine=[];TR.theirs=[];TR.okMe=false;TR.okThem=false;
+  trSt('🎉 เทรดสำเร็จ! ได้รับ '+(get.length?get.join(', '):'— (ไม่ได้รับการ์ด)')+' · ให้ไป '+(give.length?give.join(', '):'—'));trDraw()}
+function trDraw(){const open=TR.conn&&TR.conn.open;
+  $('trMine').innerHTML=TR.mine.length?TR.mine.map(n=>tile(CM[n],{cls:'o',on:'trTog('+CI[n]+')'})).join(''):'<div class="inf">ยังไม่ได้เลือก</div>';
+  $('trTheirs').innerHTML=TR.theirs.length?TR.theirs.map(n=>tile(CM[n],{cls:'o',on:'ixv('+CI[n]+')'})).join(''):'<div class="inf">เพื่อนยังไม่ได้เลือก</div>';
+  const own=CARDS.filter(c=>P.inv[c.n]).sort((a,b)=>RAR[b.n]-RAR[a.n]||b.p-a.p||a.n.localeCompare(b.n));
+  $('trInv').innerHTML=own.map(c=>tile(c,{cls:'o'+(TR.mine.includes(c.n)?' pick':''),on:'trTog('+CI[c.n]+')',badge:'×'+P.inv[c.n]})).join('');
+  const b=$('trOk');b.disabled=!open||(!TR.done&&!TR.mine.length&&!TR.theirs.length);
+  b.textContent=TR.done?'🔁 เทรดอีกรอบ':(TR.okMe?'⏳ ยกเลิกการยืนยัน':'✅ ยืนยันเทรด');
+  $('trSt2').textContent=TR.done?'':(TR.okMe&&!TR.okThem?'รอเพื่อนยืนยัน...':(TR.okThem&&!TR.okMe?'เพื่อนยืนยันแล้ว — ตรวจข้อเสนอให้ดี แล้วกดยืนยัน':''))}
+$('lTrade').onclick=trScr;$('trMk').onclick=trHost;$('trGo').onclick=trJoin;$('trOk').onclick=trOk;$('trBack').onclick=()=>{trClose();lobby()};
+$('trIn').addEventListener('keydown',e=>{if(e.key==='Enter')trJoin()});
 $('bHome').onclick=()=>{if(confirm('ออกจากเกมนี้แล้วกลับล็อบบี้? (จะไม่ได้เหรียญ)'))goLobby()};
 $('ovAct').onclick=e=>{if(e.target.id==='ovAct')$('ovAct').classList.remove('show')};
 /* ===== ระบบบัญชี (เก็บในเบราว์เซอร์) ===== */
