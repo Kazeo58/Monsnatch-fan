@@ -1155,7 +1155,7 @@ function aiRisk(c,ci){
 function godPool(){const k0=new Set();G.b.forEach(x=>{if(x&&x.owner===0)k0.add(x.card.n)});G.v[0].forEach(x=>k0.add(x.n));
   const h=G.h[0].length;let bud=DKMAX;k0.forEach(n=>bud-=RAR[n]);const mr=Math.max(1,bud-(h-1));
   return CARDS.filter(x=>!k0.has(x.n)&&RAR[x.n]<=mr).map(x=>[Math.pow(Math.random(),Math.pow(RAR[x.n],GODW)),x]).sort((a,b)=>b[0]-a[0]).slice(0,GODK).map(x=>x[1])}
-var GODW=1.2,GODK=28,GODR=8;
+var GODW=1.2,GODK=28,GODR=6;
 function aiRiskGod(c,ci){
   const b2=G.b.map(x=>x?{...x}:null);
   b2[ci]={card:c,owner:1,ctrl:1};
@@ -1165,7 +1165,7 @@ function aiRiskGod(c,ci){
   const W=P0.map(pc=>{let w=0;E.forEach(e=>{const n=snatches(b2,e,pc,0).length;if(n>w)w=n});return w}).sort((a,b)=>a-b),K=W.length;
   let r=0;W.forEach((v,i)=>{r+=v*(Math.pow((i+1)/K,h)-Math.pow(i/K,h))});return r}
 // God: คิดล่วงหน้า 2 ตา (ไม่เห็นมือผู้เล่น) — จำลองการตอบโต้ของไพ่ที่น่าจะอยู่ในมือ แล้วดูว่าตาถัดไปของบอทแย่งกลับได้อีกเท่าไร
-var GOD2=8,GODF=5,GODM=8;
+var GOD2=5,GODF=4,GODM=6,GODSLIP=.08;
 function godNext(c,ci,hi){
   const b2=G.b.map(x=>x?{...x}:null);b2[ci]={card:c,owner:1,ctrl:1};
   snatches(b2,ci,c,1).forEach(i=>{if(b2[i])b2[i].ctrl=1});
@@ -1176,26 +1176,26 @@ function godNext(c,ci,hi){
     const b3=b2.map(x=>x?{...x}:null);b3[be]={card:pc,owner:0,ctrl:0};snatches(b3,be,pc,0).forEach(i=>{if(b3[i])b3[i].ctrl=0});
     let g=0;b3.forEach((x,i)=>{if(!x)rest.forEach(rc=>{const n=snatches(b3,i,rc,1).length;if(n>g)g=n})});tot+=g});
   return tot/P0.length}
-var MEDR=.16,MEDN=7,HRK=2.2;
+var MEDR=.10,MEDN=5.5,HRK=3.2;
 function aiMove(){
   if(G.over||G.cur!==1)return;
   const lv=G.diff||DF,cand=[];
   G.h[1].forEach((c,hi)=>G.b.forEach((x,ci)=>{if(!x)cand.push([hi,ci])}));
   if(!cand.length)return;
   let best=null,bs=-1e9;const fin=[];if(lv==='god')G._gp=godPool();
-  if((lv==='easy'&&Math.random()<.3)||(lv==='medium'&&Math.random()<MEDR)){best=cand[Math.floor(Math.random()*cand.length)]} // Easy: 30% วางมั่ว
+  if((lv==='easy'&&Math.random()<.22)||(lv==='medium'&&Math.random()<MEDR)){best=cand[Math.floor(Math.random()*cand.length)]} // Easy: 22% วางมั่ว
   else cand.forEach(([hi,ci])=>{
     const c=G.h[1][hi],n=aiGain(c,ci,hi);
     let s;
-    if(lv==='easy')s=n*7+(n?0:(10-c.p)*.4)+Math.random()*10;           // Easy: เลือกมั่วเยอะ
-    else if(lv==='extreme')s=n*10+(n?0:(10-c.p)*.4)-aiRisk(c,ci)*6.5+Math.random()*.3; // Extreme: มองการตอบโต้ของผู้เล่น
+    if(lv==='easy')s=n*7+(n?0:(10-c.p)*.4)+Math.random()*8;           // Easy: เลือกมั่วเยอะ
+    else if(lv==='extreme')s=n*10+(n?0:(10-c.p)*.4)-aiRisk(c,ci)*5+Math.random()*.9; // Extreme: มองการตอบโต้ของผู้เล่น
     else if(lv==='medium')s=n*8+(n?0:(10-c.p)*.4)+Math.random()*MEDN;         // Medium: เลือกดีกว่า Easy แต่ยังมีสุ่มปนและพลาดบ้าง
-    else if(lv==='god')s=n*10+(n?0:(10-c.p)*.4)-aiRiskGod(c,ci)*GODR+Math.random()*.1; // God: เห็นมือผู้เล่นจริง คำนวณการตอบโต้ที่แย่งได้มากสุด
-    else s=n*10+(n?0:(10-c.p)*.4)-aiRisk(c,ci)*HRK+Math.random()*1.5;                    // Hard: โลภเอาจำนวนแย่งสูงสุด + เริ่มระวังการโดนแย่งกลับเล็กน้อย                    // Hard: โลภเอาจำนวนแย่งสูงสุด
+    else if(lv==='god')s=n*10+(n?0:(10-c.p)*.4)-aiRiskGod(c,ci)*GODR+Math.random()*.9; // God: ไม่เห็นมือผู้เล่น เดาจากไพ่ที่ยังไม่โผล่ · มีสุ่ม/พลาดเล็กน้อย
+    else s=n*10+(n?0:(10-c.p)*.4)-aiRisk(c,ci)*HRK+Math.random()*1.0;                    // Hard: โลภเอาจำนวนแย่งสูงสุด + เริ่มระวังการโดนแย่งกลับเล็กน้อย                    // Hard: โลภเอาจำนวนแย่งสูงสุด
     if(lv==='god')fin.push([s,hi,ci]);
     if(s>bs){bs=s;best=[hi,ci]}
   });
-  if(lv==='god'&&fin.length){fin.sort((a,b)=>b[0]-a[0]);let b2=-1e9;fin.slice(0,GODF).forEach(([s,hi,ci])=>{const t=s+GOD2*godNext(G.h[1][hi],ci,hi);if(t>b2){b2=t;best=[hi,ci]}})}
+  if(lv==='god'&&fin.length){fin.sort((a,b)=>b[0]-a[0]);const fin2=[];fin.slice(0,GODF).forEach(([s,hi,ci])=>{const t=s+GOD2*godNext(G.h[1][hi],ci,hi);fin2.push([t,hi,ci])});fin2.sort((a,b)=>b[0]-a[0]);const pk=(fin2.length>1&&Math.random()<GODSLIP)?fin2[1]:fin2[0];best=[pk[1],pk[2]]}
   place(1,best[0],best[1]);
 }
 function finish(){
@@ -1226,14 +1226,14 @@ const stars=a=>a.reduce((s,n)=>s+RAR[n],0);
 const deckOK=()=>P.deck.length===10&&stars(P.deck)<=DKMAX;
 const cval=c=>c.p+c.s.length*.7+(c.fx?2.5:0);
 // God: เลือกเด็คที่ค่ารวมสูงสุดภายใต้โควตาดาว (knapsack) แทนการหยิบใบแรงสุดตามลำดับ
-var GODN=.5,HDN=4,EXN=1.8;
+var GODN=1.2,HDN=3.2,EXN=2.4;
 function botDeckOpt(){const v=CARDS.map(c=>cval(c)+Math.random()*GODN),M=DKMAX,NEG=-1e9;
   const dp=Array.from({length:11},()=>Array(M+1).fill(NEG)),pk=Array.from({length:11},()=>Array(M+1).fill(null));dp[0][0]=0;
   CARDS.forEach((c,i)=>{const r=RAR[c.n];for(let k=9;k>=0;k--)for(let s=M-r;s>=0;s--){if(dp[k][s]>NEG&&dp[k][s]+v[i]>dp[k+1][s+r]){dp[k+1][s+r]=dp[k][s]+v[i];pk[k+1][s+r]=pk[k][s]?pk[k][s].concat(i):[i]}}});
   let bs=0,bv=NEG;for(let s=0;s<=M;s++)if(dp[10][s]>bv){bv=dp[10][s];bs=s}
   return pk[10][bs]?pk[10][bs].map(i=>({...CARDS[i]})):null}
 function botDeck(lv){if(lv==='god'){const o=botDeckOpt();if(o)return o}const d=[];let t=0;
-  const L=!lv||lv==='easy'?shuf(CARDS):CARDS.map(c=>[cval(c)+Math.random()*({medium:12,hard:HDN,extreme:EXN,god:.3}[lv]||1.2),c]).sort((a,b)=>b[0]-a[0]).map(x=>x[1]); // Easy: สุ่ม · Hard: เอนเอียงใบแรง · Extreme: เด็คแรงสุดตามโควตาดาว
+  const L=!lv||lv==='easy'?shuf(CARDS):CARDS.map(c=>[cval(c)+Math.random()*({medium:9,hard:HDN,extreme:EXN,god:.6}[lv]||1.2),c]).sort((a,b)=>b[0]-a[0]).map(x=>x[1]); // Easy: สุ่ม · Hard: เอนเอียงใบแรง · Extreme: เด็คแรงสุดตามโควตาดาว
   for(const c of L){if(d.length===10)break;if(t+RAR[c.n]+(9-d.length)<=DKMAX){d.push({...c});t+=RAR[c.n]}}return d}
 function setScr(s){document.body.className='s-'+s}
 function lobby(){setScr('lobby');$('who').textContent=ME?'👤 '+ME:'👤 ผู้เยี่ยมชม (ยังไม่ได้เข้าสู่ระบบ)';$('lOut').textContent=ME?'🚪 ออกจากระบบ':'🔑 เข้าสู่ระบบ / สมัครบัญชี';$('coinN').textContent=P.coins;$('lDel').style.display=ME?'':'none';const ok=deckOK();$('lPlay').disabled=!ok;
@@ -1267,7 +1267,7 @@ const DIFF={
   medium:{n:'Medium',ic:'🟡',win:700,lose:40,c:'#d99a00',d:'บอทวางแย่งได้ดีขึ้นแต่ยังพลาดบ้าง · เด็คกึ่งสุ่ม'},
   hard:{n:'Hard',ic:'🟠',win:1500,lose:40,c:'#ff8a3d',d:'บอทเลือกวางแย่งได้มากที่สุด · เด็คค่อนข้างแรง'},
   extreme:{n:'Extreme',ic:'🔴',win:2500,lose:40,c:'#e0334a',d:'บอทคิดป้องกันการตอบโต้ · เด็คแรงสุด'},
-  god:{n:'God',ic:'👑',win:5000,lose:40,c:'#7a1fc4',d:'บอทคิดล่วงหน้า 2 ตา · คาดเดาไพ่ในมือคุณจากโควตาดาว · เด็คเหมาะสุด'}
+  god:{n:'God',ic:'👑',win:5000,lose:40,c:'#7a1fc4',d:'บอทคิดล่วงหน้า 2 ตา · มองไม่เห็นไพ่ในมือคุณ (เดาจากไพ่ที่ยังไม่โผล่) · เด็คเหมาะสุด'}
 };
 let DF='easy';
 const EVENT={live:false}; // เปิดเมื่อพร้อม: ชนะได้เหรียญ + การ์ดโปรโม
