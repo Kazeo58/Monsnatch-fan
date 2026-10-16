@@ -195,7 +195,8 @@ body.s-trade #scTrade{display:flex}
 <div class="cdr"><input id="cIn" placeholder="ใส่โค้ด" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="40"><button class="btn" id="cGo">ใช้โค้ด</button></div><div id="cMsg"></div>
 <button class="btn alt" id="lIdx" style="width:100%;flex:none">📖 ดัชนีการ์ด</button>
 <button class="btn alt" id="lHelp" style="width:100%;flex:none">📖 กฎการเล่น</button>
-<button class="btn alt" id="lOut" style="width:100%;flex:none"></button><p id="lInfo" class="inf"></p></div>
+<button class="btn alt" id="lOut" style="width:100%;flex:none"></button>
+<button class="btn alt" id="lDel" style="width:100%;flex:none;color:#d33;border-color:#d33;display:none">🗑️ ลบบัญชี</button><p id="lInfo" class="inf"></p></div>
 <div id="scPacks" class="scr"><h2 class="ttl2">🎁 ซองการ์ด</h2><div class="coin">🪙 <b id="coinP">0</b></div>
 <button class="btn big" id="b1">1 ซอง (10 ใบ)<br><small>150 🪙</small></button>
 <button class="btn big" id="b5" style="background:#ff8a3d">5 ซอง (50 ใบ)<br><small>700 🪙 · ถูกกว่าซื้อเดี่ยว 50</small></button>
@@ -233,6 +234,11 @@ body.s-trade #scTrade{display:flex}
 <button class="btn big" id="trOk" style="width:100%;background:#16a085">✅ ยืนยันเทรด</button>
 <h3 class="ixh">🎒 คลังของคุณ <small>(แตะ = เพิ่ม 1 ใบ · แตะการ์ดในข้อเสนอ = ลด 1 ใบ · รวมไม่เกิน 20 ใบ)</small></h3><div class="tg" id="trInv"></div></div>
 <button class="btn alt" id="trBack" style="width:100%;flex:none">← ออกจากห้อง / กลับล็อบบี้</button></div>
+<div class="ov" id="ovDel"><div class="box" style="text-align:center"><h2>🗑️ ลบบัญชี</h2>
+<p>บัญชี <b id="delWho"></b> พร้อมเหรียญ การ์ด เด็ค และประวัติเทรดทั้งหมดจะถูกลบ<b style="color:#d33"> ถาวร กู้คืนไม่ได้</b></p>
+<div class="fm"><input id="delPw" type="password" placeholder="ใส่รหัสผ่านเพื่อยืนยัน" autocomplete="current-password"></div>
+<div class="err" id="delErr"></div>
+<div class="bar"><button class="btn alt" id="delNo">ยกเลิก</button><button class="btn" id="delGo" style="background:#d33">ลบถาวร</button></div></div></div>
 <div class="ov" id="ovTh"><div class="box" id="thBox"></div></div>
 <div class="ov" id="ovAct"><div class="box" id="actBox" style="text-align:center;width:min(100%,300px)"></div></div>
 <div class="ov" id="ovOpen"><div id="opHdr"></div><div id="opArena"><div id="opPk" class="gone"><div class="opPp opPb"></div><div class="opPp opPt"></div><div class="opBeam"></div></div><div id="opSt"></div><div id="opFx"></div></div><div id="opHint"></div><button class="btn alt" id="opSkip">ข้ามทั้งหมด ⏭</button><div id="opFlash"></div></div>
@@ -1145,21 +1151,51 @@ function aiRisk(c,ci){
   pool.forEach(pc=>{let w=0;E.forEach(e=>{const n=snatches(b2,e,pc,0).length;if(n>w)w=n});sum+=w;if(w>mx)mx=w});
   return (sum/pool.length+mx)/2;
 }
+// God: ไม่เห็นไพ่ในมือผู้เล่น — ประเมินจากไพ่ที่ยังไม่โผล่ + โควตาดาวรวมของเด็ค (ไม่เกิน DKMAX) ที่เหลือให้ไพ่ในมือ
+function godPool(){const k0=new Set();G.b.forEach(x=>{if(x&&x.owner===0)k0.add(x.card.n)});G.v[0].forEach(x=>k0.add(x.n));
+  const h=G.h[0].length;let bud=DKMAX;k0.forEach(n=>bud-=RAR[n]);const mr=Math.max(1,bud-(h-1));
+  return CARDS.filter(x=>!k0.has(x.n)&&RAR[x.n]<=mr).map(x=>[Math.pow(Math.random(),Math.pow(RAR[x.n],GODW)),x]).sort((a,b)=>b[0]-a[0]).slice(0,GODK).map(x=>x[1])}
+var GODW=1.2,GODK=28,GODR=8;
+function aiRiskGod(c,ci){
+  const b2=G.b.map(x=>x?{...x}:null);
+  b2[ci]={card:c,owner:1,ctrl:1};
+  snatches(b2,ci,c,1).forEach(i=>{if(b2[i])b2[i].ctrl=1});
+  const E=[];b2.forEach((x,i)=>{if(!x)E.push(i)});
+  const P0=G._gp||[],h=G.h[0].length;if(!E.length||!h||!P0.length)return 0;
+  const W=P0.map(pc=>{let w=0;E.forEach(e=>{const n=snatches(b2,e,pc,0).length;if(n>w)w=n});return w}).sort((a,b)=>a-b),K=W.length;
+  let r=0;W.forEach((v,i)=>{r+=v*(Math.pow((i+1)/K,h)-Math.pow(i/K,h))});return r}
+// God: คิดล่วงหน้า 2 ตา (ไม่เห็นมือผู้เล่น) — จำลองการตอบโต้ของไพ่ที่น่าจะอยู่ในมือ แล้วดูว่าตาถัดไปของบอทแย่งกลับได้อีกเท่าไร
+var GOD2=8,GODF=5,GODM=8;
+function godNext(c,ci,hi){
+  const b2=G.b.map(x=>x?{...x}:null);b2[ci]={card:c,owner:1,ctrl:1};
+  snatches(b2,ci,c,1).forEach(i=>{if(b2[i])b2[i].ctrl=1});
+  const E=[];b2.forEach((x,i)=>{if(!x)E.push(i)});if(!E.length)return 0;
+  const rest=G.h[1].filter((_,k)=>k!==hi),P0=(G._gp||[]).slice(0,GODM);if(!rest.length||!P0.length)return 0;
+  let tot=0;
+  P0.forEach(pc=>{let bw=-1,be=E[0];E.forEach(e=>{const n=snatches(b2,e,pc,0).length;if(n>bw){bw=n;be=e}});
+    const b3=b2.map(x=>x?{...x}:null);b3[be]={card:pc,owner:0,ctrl:0};snatches(b3,be,pc,0).forEach(i=>{if(b3[i])b3[i].ctrl=0});
+    let g=0;b3.forEach((x,i)=>{if(!x)rest.forEach(rc=>{const n=snatches(b3,i,rc,1).length;if(n>g)g=n})});tot+=g});
+  return tot/P0.length}
+var MEDR=.16,MEDN=7,HRK=2.2;
 function aiMove(){
   if(G.over||G.cur!==1)return;
   const lv=G.diff||DF,cand=[];
   G.h[1].forEach((c,hi)=>G.b.forEach((x,ci)=>{if(!x)cand.push([hi,ci])}));
   if(!cand.length)return;
-  let best=null,bs=-1e9;
-  if(lv==='easy'&&Math.random()<.3){best=cand[Math.floor(Math.random()*cand.length)]} // Easy: 30% วางมั่ว
+  let best=null,bs=-1e9;const fin=[];if(lv==='god')G._gp=godPool();
+  if((lv==='easy'&&Math.random()<.3)||(lv==='medium'&&Math.random()<MEDR)){best=cand[Math.floor(Math.random()*cand.length)]} // Easy: 30% วางมั่ว
   else cand.forEach(([hi,ci])=>{
     const c=G.h[1][hi],n=aiGain(c,ci,hi);
     let s;
     if(lv==='easy')s=n*7+(n?0:(10-c.p)*.4)+Math.random()*10;           // Easy: เลือกมั่วเยอะ
     else if(lv==='extreme')s=n*10+(n?0:(10-c.p)*.4)-aiRisk(c,ci)*6.5+Math.random()*.3; // Extreme: มองการตอบโต้ของผู้เล่น
-    else s=n*10+(n?0:(10-c.p)*.4)+Math.random()*1.5;                    // Hard: โลภเอาจำนวนแย่งสูงสุด
+    else if(lv==='medium')s=n*8+(n?0:(10-c.p)*.4)+Math.random()*MEDN;         // Medium: เลือกดีกว่า Easy แต่ยังมีสุ่มปนและพลาดบ้าง
+    else if(lv==='god')s=n*10+(n?0:(10-c.p)*.4)-aiRiskGod(c,ci)*GODR+Math.random()*.1; // God: เห็นมือผู้เล่นจริง คำนวณการตอบโต้ที่แย่งได้มากสุด
+    else s=n*10+(n?0:(10-c.p)*.4)-aiRisk(c,ci)*HRK+Math.random()*1.5;                    // Hard: โลภเอาจำนวนแย่งสูงสุด + เริ่มระวังการโดนแย่งกลับเล็กน้อย                    // Hard: โลภเอาจำนวนแย่งสูงสุด
+    if(lv==='god')fin.push([s,hi,ci]);
     if(s>bs){bs=s;best=[hi,ci]}
   });
+  if(lv==='god'&&fin.length){fin.sort((a,b)=>b[0]-a[0]);let b2=-1e9;fin.slice(0,GODF).forEach(([s,hi,ci])=>{const t=s+GOD2*godNext(G.h[1][hi],ci,hi);if(t>b2){b2=t;best=[hi,ci]}})}
   place(1,best[0],best[1]);
 }
 function finish(){
@@ -1189,11 +1225,18 @@ function load(){try{P=JSON.parse(localStorage.getItem(SV))}catch(e){P=null}
 const stars=a=>a.reduce((s,n)=>s+RAR[n],0);
 const deckOK=()=>P.deck.length===10&&stars(P.deck)<=DKMAX;
 const cval=c=>c.p+c.s.length*.7+(c.fx?2.5:0);
-function botDeck(lv){const d=[];let t=0;
-  const L=!lv||lv==='easy'?shuf(CARDS):CARDS.map(c=>[cval(c)+Math.random()*(lv==='hard'?6:1.2),c]).sort((a,b)=>b[0]-a[0]).map(x=>x[1]); // Easy: สุ่ม · Hard: เอนเอียงใบแรง · Extreme: เด็คแรงสุดตามโควตาดาว
+// God: เลือกเด็คที่ค่ารวมสูงสุดภายใต้โควตาดาว (knapsack) แทนการหยิบใบแรงสุดตามลำดับ
+var GODN=.5,HDN=4,EXN=1.8;
+function botDeckOpt(){const v=CARDS.map(c=>cval(c)+Math.random()*GODN),M=DKMAX,NEG=-1e9;
+  const dp=Array.from({length:11},()=>Array(M+1).fill(NEG)),pk=Array.from({length:11},()=>Array(M+1).fill(null));dp[0][0]=0;
+  CARDS.forEach((c,i)=>{const r=RAR[c.n];for(let k=9;k>=0;k--)for(let s=M-r;s>=0;s--){if(dp[k][s]>NEG&&dp[k][s]+v[i]>dp[k+1][s+r]){dp[k+1][s+r]=dp[k][s]+v[i];pk[k+1][s+r]=pk[k][s]?pk[k][s].concat(i):[i]}}});
+  let bs=0,bv=NEG;for(let s=0;s<=M;s++)if(dp[10][s]>bv){bv=dp[10][s];bs=s}
+  return pk[10][bs]?pk[10][bs].map(i=>({...CARDS[i]})):null}
+function botDeck(lv){if(lv==='god'){const o=botDeckOpt();if(o)return o}const d=[];let t=0;
+  const L=!lv||lv==='easy'?shuf(CARDS):CARDS.map(c=>[cval(c)+Math.random()*({medium:12,hard:HDN,extreme:EXN,god:.3}[lv]||1.2),c]).sort((a,b)=>b[0]-a[0]).map(x=>x[1]); // Easy: สุ่ม · Hard: เอนเอียงใบแรง · Extreme: เด็คแรงสุดตามโควตาดาว
   for(const c of L){if(d.length===10)break;if(t+RAR[c.n]+(9-d.length)<=DKMAX){d.push({...c});t+=RAR[c.n]}}return d}
 function setScr(s){document.body.className='s-'+s}
-function lobby(){setScr('lobby');$('who').textContent=ME?'👤 '+ME:'👤 ผู้เยี่ยมชม (ยังไม่ได้เข้าสู่ระบบ)';$('lOut').textContent=ME?'🚪 ออกจากระบบ':'🔑 เข้าสู่ระบบ / สมัครบัญชี';$('coinN').textContent=P.coins;const ok=deckOK();$('lPlay').disabled=!ok;
+function lobby(){setScr('lobby');$('who').textContent=ME?'👤 '+ME:'👤 ผู้เยี่ยมชม (ยังไม่ได้เข้าสู่ระบบ)';$('lOut').textContent=ME?'🚪 ออกจากระบบ':'🔑 เข้าสู่ระบบ / สมัครบัญชี';$('coinN').textContent=P.coins;$('lDel').style.display=ME?'':'none';const ok=deckOK();$('lPlay').disabled=!ok;
   $('lInfo').textContent=ok?'เด็คพร้อมแล้ว ✓ ('+stars(P.deck)+'/'+DKMAX+' ★)':'⚠️ เด็คยังไม่พร้อม: ต้องมี 10 ใบ และดาวรวมไม่เกิน '+DKMAX+' (ตอนนี้ '+P.deck.length+'/10 ใบ · '+stars(P.deck)+' ★)'}
 function goLobby(){if(G){G.left=true;G.over=true}$('ovEnd').classList.remove('show');lobby()}
 function packs(){setScr('packs');$('coinP').textContent=P.coins;$('b1').disabled=P.coins<PK1;$('b5').disabled=P.coins<PK5}
@@ -1221,8 +1264,10 @@ function dk(i,v){const n=CARDS[i].n;$('ovAct').classList.remove('show');
   save();decks()}
 const DIFF={
   easy:{n:'Easy',ic:'🟢',win:300,lose:40,c:'#3fae4a',d:'บอทวางมั่วบ้าง · เด็คสุ่ม'},
-  hard:{n:'Hard',ic:'🟠',win:700,lose:40,c:'#ff8a3d',d:'บอทเลือกวางแย่งได้มากที่สุด · เด็คค่อนข้างแรง'},
-  extreme:{n:'Extreme',ic:'🔴',win:1500,lose:40,c:'#e0334a',d:'บอทคิดป้องกันการตอบโต้ · เด็คแรงสุด'}
+  medium:{n:'Medium',ic:'🟡',win:700,lose:40,c:'#d99a00',d:'บอทวางแย่งได้ดีขึ้นแต่ยังพลาดบ้าง · เด็คกึ่งสุ่ม'},
+  hard:{n:'Hard',ic:'🟠',win:1500,lose:40,c:'#ff8a3d',d:'บอทเลือกวางแย่งได้มากที่สุด · เด็คค่อนข้างแรง'},
+  extreme:{n:'Extreme',ic:'🔴',win:2500,lose:40,c:'#e0334a',d:'บอทคิดป้องกันการตอบโต้ · เด็คแรงสุด'},
+  god:{n:'God',ic:'👑',win:5000,lose:40,c:'#7a1fc4',d:'บอทคิดล่วงหน้า 2 ตา · คาดเดาไพ่ในมือคุณจากโควตาดาว · เด็คเหมาะสุด'}
 };
 let DF='easy';
 const EVENT={live:false}; // เปิดเมื่อพร้อม: ชนะได้เหรียญ + การ์ดโปรโม
@@ -1349,7 +1394,7 @@ async function hashPw(pw,salt){const e=new TextEncoder(),k=await crypto.subtle.i
 function accts(){try{return JSON.parse(localStorage.getItem(AK))||{}}catch(e){return {}}}
 function authMode(r){REG=r;$('tLogin').classList.toggle('on',!r);$('tReg').classList.toggle('on',r);
   $('aPass2').style.display=r?'':'none';$('aPass').autocomplete=r?'new-password':'current-password';
-  $('aGo').textContent=r?'สมัครบัญชี':'เข้าสู่ระบบ';$('aErr').textContent=''}
+  $('aGo').textContent=r?'สมัครบัญชี':'เข้าสู่ระบบ';$('aErr').textContent='';$('aErr').style.color=''}
 function showAuth(){setScr('auth');authMode(false);$('aUser').value=$('aPass').value=$('aPass2').value=''}
 function enter(u){ME=u;SV=u?'monsnatch_v1_u_'+u.toLowerCase():'monsnatch_v1';
   try{localStorage.setItem(SK,u||'#guest')}catch(e){}load();lobby()}
@@ -1372,6 +1417,26 @@ async function authGo(){const u=$('aUser').value.trim(),p=$('aPass').value,E=$('
   }catch(e){E.textContent='เกิดข้อผิดพลาด ลองใหม่อีกครั้ง'}
   finally{$('aGo').disabled=false}}
 function logout(){if(ME&&!confirm('ออกจากระบบ?'))return;try{localStorage.removeItem(SK)}catch(e){}ME=null;showAuth()}
+/* ===== ลบบัญชี ===== */
+function delOpen(){if(!ME)return;$('delWho').textContent=ME;$('delPw').value='';$('delErr').textContent='';$('ovDel').classList.add('show')}
+function delClose(){$('ovDel').classList.remove('show')}
+async function delGo(){const E=$('delErr');E.textContent='';if(!ME)return;
+  const A=accts(),k=ME.toLowerCase(),a=A[k],pw=$('delPw').value;
+  if(!a){E.textContent='ไม่พบบัญชีนี้ในเครื่อง';return}
+  if(!pw){E.textContent='ใส่รหัสผ่านเพื่อยืนยัน';return}
+  $('delGo').disabled=true;
+  try{
+    if(a.h!==await hashPw(pw,a.salt)){E.textContent='รหัสผ่านไม่ถูกต้อง';return}
+    if(!confirm('ยืนยันลบบัญชี "'+ME+'" ถาวรจริง ๆ ใช่ไหม?'))return;
+    try{trClose()}catch(e){}
+    delete A[k];localStorage.setItem(AK,JSON.stringify(A));
+    localStorage.removeItem('monsnatch_v1_u_'+k);localStorage.removeItem(SK);
+    ME=null;delClose();showAuth();$('aErr').style.color='#2a9d4a';$('aErr').textContent='ลบบัญชีเรียบร้อยแล้ว'
+  }catch(e){E.textContent='เกิดข้อผิดพลาด ลองใหม่อีกครั้ง'}
+  finally{$('delGo').disabled=false}}
+$('lDel').onclick=delOpen;$('delNo').onclick=delClose;$('delGo').onclick=delGo;
+$('ovDel').onclick=e=>{if(e.target.id==='ovDel')delClose()};
+$('delPw').addEventListener('keydown',e=>{if(e.key==='Enter')delGo()});
 $('tLogin').onclick=()=>authMode(false);$('tReg').onclick=()=>authMode(true);
 $('aGo').onclick=authGo;$('aGuest').onclick=()=>enter(null);$('lOut').onclick=logout;
 ['aUser','aPass','aPass2'].forEach(id=>$(id).addEventListener('keydown',e=>{if(e.key==='Enter')authGo()}));
