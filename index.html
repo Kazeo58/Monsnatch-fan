@@ -147,6 +147,13 @@ body.s-auth #scAuth{display:flex}
 @keyframes opFlash{0%{opacity:.95}100%{opacity:0}}
 #ovOpen.shk{animation:opScreen .5s linear}
 @keyframes opScreen{0%,100%{transform:none}20%{transform:translate(-6px,4px)}40%{transform:translate(6px,-4px)}60%{transform:translate(-4px,-3px)}80%{transform:translate(4px,3px)}}
+body.s-index #scIndex{display:flex}
+.tl.nown .card img{filter:grayscale(1) brightness(.6)}
+.cdr{display:flex;gap:6px;width:100%}.cdr input{flex:1;min-width:0;font:inherit;font-size:16px;padding:10px 12px;border:2px solid #d9c3a0;border-radius:12px;background:#fff;color:var(--ink)}
+.cdr .btn{flex:0 0 auto;padding:10px 16px}
+#cMsg{min-height:1.3em;font-size:13px;text-align:center;width:100%}
+#ixTabs .btn{padding:6px 2px;font-size:13px}
+.ixh{width:100%;margin:8px 0 2px;font-size:16px}.ixh small{font-weight:500;font-size:11px;opacity:.8}
 </style></head><body class="s-auth">
 <div class="top">
   <div class="pill ai" id="sAI">บอท<b>0</b></div>
@@ -180,12 +187,15 @@ body.s-auth #scAuth{display:flex}
 <button class="btn big" id="lPack" style="background:#ff8a3d">🎁 เปิดซองการ์ด</button>
 <button class="btn big" id="lDeck" style="background:#2f8cff">🃏 จัดเด็ค</button>
 <button class="btn big" id="lEvent" style="background:#e0467c">🎉 Event<br><small>🔒 Coming Soon</small></button>
+<div class="cdr"><input id="cIn" placeholder="ใส่โค้ด" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="40"><button class="btn" id="cGo">ใช้โค้ด</button></div><div id="cMsg"></div>
+<button class="btn alt" id="lIdx" style="width:100%;flex:none">📖 ดัชนีการ์ด</button>
 <button class="btn alt" id="lHelp" style="width:100%;flex:none">📖 กฎการเล่น</button>
 <button class="btn alt" id="lOut" style="width:100%;flex:none"></button><p id="lInfo" class="inf"></p></div>
 <div id="scPacks" class="scr"><h2 class="ttl2">🎁 ซองการ์ด</h2><div class="coin">🪙 <b id="coinP">0</b></div>
 <button class="btn big" id="b1">1 ซอง (10 ใบ)<br><small>150 🪙</small></button>
 <button class="btn big" id="b5" style="background:#ff8a3d">5 ซอง (50 ใบ)<br><small>700 🪙 · ถูกกว่าซื้อเดี่ยว 50</small></button>
 <p class="inf">ทุกซองมี 10 ใบ<br>ใบที่ 1-5 = ★1 · ใบที่ 6-8 = ★2 · ใบที่ 9 = ★3<br>ใบที่ 10 สุ่ม: ★1 70% · ★2 20% · ★3 6% · ★4 3% · ★5 1%</p>
+<button class="btn big" id="pIdx" style="background:#2f8cff">📖 ดูการ์ดในซอง</button>
 <button class="btn alt" id="pBack" style="width:100%;flex:none">← กลับล็อบบี้</button></div>
 <div id="scDecks" class="scr"><h2 class="ttl2">🃏 จัดเด็ค</h2><div id="dCnt" class="inf"></div><div id="dMsg" class="inf" style="color:#d33;min-height:1.3em"></div>
 <div class="tg" id="dDeck"></div><h3 id="dOwnT" style="margin:4px 0 0"></h3><div class="tg" id="dOwn"></div>
@@ -199,6 +209,10 @@ body.s-auth #scAuth{display:flex}
 <div class="evr"><div class="evc"><span>🪙</span>เหรียญ<small>รางวัลเมื่อชนะ</small></div><div class="evc promo"><span>🎴</span>การ์ดโปรโม<small>PROMO</small></div></div>
 <button class="btn big" id="evPlay" disabled>⚔️ เข้าร่วม Event<br><small>เร็ว ๆ นี้</small></button>
 <button class="btn alt" id="evBack" style="width:100%;flex:none">← กลับล็อบบี้</button></div>
+<div id="scIndex" class="scr"><h2 class="ttl2">📖 ดัชนีการ์ดในซอง</h2><div id="ixCnt" class="inf"></div>
+<p class="inf">ทุกซองมี 10 ใบ: ใบที่ 1-5 = ★1 · ใบที่ 6-8 = ★2 · ใบที่ 9 = ★3<br>ใบที่ 10 สุ่ม ★1 70% · ★2 20% · ★3 6% · ★4 3% · ★5 1%<br>การ์ดสีเทา = ยังไม่มี (แตะเพื่อดูได้)</p>
+<div class="tabs" id="ixTabs"></div><div id="ixList" style="width:100%"></div>
+<button class="btn alt" id="ixBack" style="width:100%;flex:none">← กลับ</button></div>
 <div class="ov" id="ovAct"><div class="box" id="actBox" style="text-align:center;width:min(100%,300px)"></div></div>
 <div class="ov" id="ovOpen"><div id="opHdr"></div><div id="opArena"><div id="opPk" class="gone"><div class="opPp opPb"></div><div class="opPp opPt"></div><div class="opBeam"></div></div><div id="opSt"></div><div id="opFx"></div></div><div id="opHint"></div><button class="btn alt" id="opSkip">ข้ามทั้งหมด ⏭</button><div id="opFlash"></div></div>
 <div class="ov" id="ovPack"><div class="box" id="packBox" style="text-align:center;width:min(100%,440px)"></div></div>
@@ -1140,7 +1154,7 @@ $('bOk').onclick=()=>{if(G.ui){const cb=G.ui.cb;G.ui=null;cb(null);return}if(G.c
 $('sMe').onclick=()=>showVoid(0);$('sAI').onclick=()=>showVoid(1);
 $('bHelp').onclick=()=>$('ovHelp').classList.add('show');
 $('ovHelp').onclick=e=>{if(e.target.id==='ovHelp')$('ovHelp').classList.remove('show')};
-$('help').innerHTML='<h2>วิธีเล่น (กติกา Monsnatch)</h2><p>• สนาม 4×4 ผู้เล่นคนละ 10 ใบในมือ ผลัดกันวางทีละ 1 ใบ คนละ 8 เทิร์น (รวม 16 เทิร์น) เกมจบเมื่อสนามเต็ม<br>• สามเหลี่ยมแดงบนขอบการ์ด = <b>Snatch-Sight</b> (ทิศที่ใบนั้นมองเห็น รวมแนวทแยง) การ์ดบอทจะหันหัวกลับตามกติกา แตะการ์ดสองครั้ง (ในมือหรือบนสนาม) เพื่อซูมดูรายละเอียด<br>• หลังวาง การ์ดใหม่จะ "แย่ง" ใบของคู่ต่อสู้ที่อยู่ในทิศที่มองเห็น ถ้า <b>พลังมากกว่า</b> หรือ <b>ธาตุชนะ</b> (พลังเท่ากันไม่ชนะ)<br>• ทุกการแย่งคิดพร้อมกันจากสถานะเดียวกัน แย่งแล้วไม่ต่อโซ่<br>• จบเกม: ใครคุมการ์ดบนสนามมากกว่า (แต้มต่อใบ = 1) ชนะ เท่ากันคนเริ่มก่อนชนะ<br>• การ์ด Nekomochi ทุกธาตุ (ยกเว้น Origin) ชนะมันได้<br>• ขอบสีฟ้า = ของคุณ ขอบชมพู = ของบอท</p><p><b>ความสามารถการ์ด</b><br>• <b>On Summon</b> ทำงานตอนวางการ์ด (ก่อนแย่งตามสามเหลี่ยม) • <b>On Snatch</b> ทำงานเมื่อการ์ดใบนั้นแย่งตามสามเหลี่ยมได้อย่างน้อย 1 ใบตอนวาง<br>• "ระยะ 1 ช่อง" = 8 ช่องรอบตัว รวมแนวทแยง • ความสามารถที่สั่งแย่งตรง ๆ ไม่ต้องเทียบพลัง/ธาตุ<br>• <b>Void</b> = กองทิ้งของแต่ละฝ่าย (แตะป้ายคะแนนเพื่อดู) ใส่ได้เฉพาะ <b>ใบสำรอง</b> ที่ไม่ได้ใช้วาง (มี 2 ใบ) ถ้าใส่แล้วจะวางไม่ครบ 8 ใบ ก็ใส่ไม่ได้<br>• ธาตุไฟ 🔥 ในมือ = ใช้เป็นค่าใช้จ่ายของ Inaroth / Chubber ได้ • ธาตุน้ำ 💧 ในมือ = ค่าใช้จ่ายของ Quarania / Tidecoil ได้ • ธาตุดิน 🪨 ในมือ = ค่าใช้จ่ายของ Gravalord ได้ • ธาตุลม 🌪️ ในมือ = ค่าใช้จ่ายของ Tempelong ได้ • ธาตุสายฟ้า ⚡ ในมือ = ค่าใช้จ่ายของ Raibaku ได้ • ธาตุน้ำแข็ง ❄️ ในมือ = ค่าใช้จ่ายของ Cyrope / Samuguin ได้<br>• ธาตุแสง ✨ ในมือ = ค่าใช้จ่ายของ Angelo Drogo / Seralux ได้<br>• Cyrope / Frostroar / Koolzard ยึดได้เฉพาะ Momon <b>ธาตุดิน / ลม / โลหะ</b> ในระยะ 1 ช่อง • Samuguin ถ้าไม่ใส่ Void จะแย่งตามสามเหลี่ยมไม่ได้ในเทิร์นนั้น • Frostroar ทริกเกอร์ได้ครั้งเดียวต่อใบ<br>• "นอกระยะ 1 ช่อง" = ห่างจากตัวตั้งแต่ 2 ช่องขึ้นไป • Thunthun แย่งใบที่พลัง <b>เท่ากัน</b> ได้ • Drablitz ถ้าใช้ On Summon ยึดได้ จะแย่งตามสามเหลี่ยมไม่ได้ในเทิร์นนั้น<br>• <b>สลับ/ย้าย</b> (Whirltrix, Scorny, Qinglong, Tempelong) ใช้ได้กับ Momon พวกเดียวกันเท่านั้น • <b>Glowku</b> ถูกย้าย/สลับด้วยความสามารถของพวกเดียวกันในเทิร์นเจ้าของ → Incite ตัวเอง<br>• 🛡️ <b>Ward</b> = Momon ใบนั้นถูกแย่งไม่ได้ (ทั้งสามเหลี่ยมและความสามารถ) จนจบเทิร์นถัดไปของคู่ต่อสู้ (มีไอคอนโล่บนการ์ด)<br>• <b>Incite</b> = สั่งให้ Momon นั้นแย่งตามสามเหลี่ยมของมันเองทันที (ไม่ทริกเกอร์ On Snatch และไม่ทริกเกอร์ "ถูกแย่งคืน")<br>• <b>ถูกแย่งคืน</b> = Momon ที่ถูกแย่งไป แล้วถูกเจ้าของแย่งกลับมา (Alphaloxes / Puffpuff ทำงาน) แต่ถ้าถูกแย่งคืนด้วย Incite จะไม่ทริกเกอร์<br>• 🔰 <b>ป้องกันความสามารถ</b> (Deaconel) = ถูกแย่งด้วยความสามารถของ Momon ฝั่งตรงข้าม (รวม Incite) ไม่ได้ แต่ยังถูกแย่งตามสามเหลี่ยมตอนวางได้<br>• 👑 <b>First Player Token</b> = ผู้ถือชนะเมื่อแต้มเสมอ (Sproutti ยึดครองได้ ป้ายคะแนนจะมี 👑)<br>• ★★ <b>Marking Token +1</b> = Sproutti ที่อยู่กับเจ้าของนับเป็น 2 แต้ม ถ้าถูกแย่งไปจะนับ 1 แต้มของฝั่งที่แย่ง<br>• 🔒 Meowo ถูกแย่งไม่ได้ขณะอยู่กับเจ้าของและมี Momon พวกเดียวกันใบอื่นในระยะ 1 ช่องตั้งแต่ 4 ใบ (ใช้กับทั้งสามเหลี่ยมและความสามารถ)<br>• ☠️ <b>Noxmera</b> ตอนวาง ทำให้ Momon ฝั่งตรงข้ามในระยะ 1 ช่องเสีย Ward ก่อนแย่ง • <b>Batterko</b> แย่ง Momon ที่มี<b>พลังดั้งเดิม</b> ≥8 ได้ • <b>Eelnada</b> (อยู่กับเจ้าของ) ถูกแย่งพร้อม Momon ใบอื่นในคราวเดียวกันไม่ได้ • <b>Deatheye</b> (อยู่กับเจ้าของ) ถูก Momon ธาตุน้ำแข็ง ❄️ / ธรรมชาติ 🌿 / แสง ✨ แย่งไม่ได้ • <b>Miasmoth</b> (เทิร์นของเจ้าของ ขณะอยู่กับเจ้าของ) Momon ฝั่งตรงข้ามได้ <b>Power -1</b> ต่อ Momon ☠️ พวกเดียวกันใบอื่นที่อยู่ในระยะ 1 ช่องของมัน (มีป้ายม่วงบนการ์ด)</p><p>✨ <b>ธาตุแสง</b>: Angelo Drogo / Seralux / Luminael / Alicorna / Luxion ยึด Momon <b>ธาตุไฟ / โลหะ / มืด</b> 1 ใบ <b>นอกระยะ 1 ช่อง</b> ได้ (ไม่ต้องเทียบพลัง) • Luminael ต้องมี Momon แสงพวกเดียวกันใบอื่นบนสนาม • Alicorna ถ้ายึดได้ จะแย่งตามสามเหลี่ยมไม่ได้ในเทิร์นนั้น • Luxion ทำงานเมื่อแย่งตามสามเหลี่ยมได้</p><p>🤖 <b>ระดับบอท</b>: 🟢 Easy ชนะรับ 300 🪙 · 🟠 Hard ชนะรับ 700 🪙 · 🔴 Extreme ชนะรับ 1,500 🪙 (แพ้ได้ 40 🪙) • 🎉 <b>Event</b>: เล่นชนะรับเหรียญ + การ์ดโปรโม (Coming Soon)</p><p><b>ตารางธาตุ (ชนะ →)</b></p><table>'+EL.filter(e=>e!=='Origin').map(e=>'<tr><td>'+IC[e]+' '+TH[e]+'</td><td>'+BEATS[e].map(x=>IC[x]+TH[x]).join(' ')+'</td></tr>').join('')+'<tr><td>'+IC.Origin+' ออริจิน</td><td>เป็นกลาง</td></tr></table><p style="color:#888;margin-top:10px">แฟนเมดสำหรับเล่นส่วนตัว รูปการ์ด © 2026 MOMON WONDER มีการ์ดทั้งหมด '+CARDS.length+' ใบ</p><button class="btn" style="width:100%;margin-top:8px" onclick="$(\'ovHelp\').classList.remove(\'show\')">เข้าใจแล้ว</button>';
+$('help').innerHTML='<h2>วิธีเล่น (กติกา Monsnatch)</h2><p>• สนาม 4×4 ผู้เล่นคนละ 10 ใบในมือ ผลัดกันวางทีละ 1 ใบ คนละ 8 เทิร์น (รวม 16 เทิร์น) เกมจบเมื่อสนามเต็ม<br>• สามเหลี่ยมแดงบนขอบการ์ด = <b>Snatch-Sight</b> (ทิศที่ใบนั้นมองเห็น รวมแนวทแยง) การ์ดบอทจะหันหัวกลับตามกติกา แตะการ์ดสองครั้ง (ในมือหรือบนสนาม) เพื่อซูมดูรายละเอียด<br>• หลังวาง การ์ดใหม่จะ "แย่ง" ใบของคู่ต่อสู้ที่อยู่ในทิศที่มองเห็น ถ้า <b>พลังมากกว่า</b> หรือ <b>ธาตุชนะ</b> (พลังเท่ากันไม่ชนะ)<br>• ทุกการแย่งคิดพร้อมกันจากสถานะเดียวกัน แย่งแล้วไม่ต่อโซ่<br>• จบเกม: ใครคุมการ์ดบนสนามมากกว่า (แต้มต่อใบ = 1) ชนะ เท่ากันคนเริ่มก่อนชนะ<br>• การ์ด Nekomochi ทุกธาตุ (ยกเว้น Origin) ชนะมันได้<br>• ขอบสีฟ้า = ของคุณ ขอบชมพู = ของบอท<br>• เด็คมี 10 ใบ ใส่การ์ดชื่อเดียวกันซ้ำไม่ได้ (ใบละ 1 ใบ)</p><p><b>ความสามารถการ์ด</b><br>• <b>On Summon</b> ทำงานตอนวางการ์ด (ก่อนแย่งตามสามเหลี่ยม) • <b>On Snatch</b> ทำงานเมื่อการ์ดใบนั้นแย่งตามสามเหลี่ยมได้อย่างน้อย 1 ใบตอนวาง<br>• "ระยะ 1 ช่อง" = 8 ช่องรอบตัว รวมแนวทแยง • ความสามารถที่สั่งแย่งตรง ๆ ไม่ต้องเทียบพลัง/ธาตุ<br>• <b>Void</b> = กองทิ้งของแต่ละฝ่าย (แตะป้ายคะแนนเพื่อดู) ใส่ได้เฉพาะ <b>ใบสำรอง</b> ที่ไม่ได้ใช้วาง (มี 2 ใบ) ถ้าใส่แล้วจะวางไม่ครบ 8 ใบ ก็ใส่ไม่ได้<br>• ธาตุไฟ 🔥 ในมือ = ใช้เป็นค่าใช้จ่ายของ Inaroth / Chubber ได้ • ธาตุน้ำ 💧 ในมือ = ค่าใช้จ่ายของ Quarania / Tidecoil ได้ • ธาตุดิน 🪨 ในมือ = ค่าใช้จ่ายของ Gravalord ได้ • ธาตุลม 🌪️ ในมือ = ค่าใช้จ่ายของ Tempelong ได้ • ธาตุสายฟ้า ⚡ ในมือ = ค่าใช้จ่ายของ Raibaku ได้ • ธาตุน้ำแข็ง ❄️ ในมือ = ค่าใช้จ่ายของ Cyrope / Samuguin ได้<br>• ธาตุแสง ✨ ในมือ = ค่าใช้จ่ายของ Angelo Drogo / Seralux ได้<br>• Cyrope / Frostroar / Koolzard ยึดได้เฉพาะ Momon <b>ธาตุดิน / ลม / โลหะ</b> ในระยะ 1 ช่อง • Samuguin ถ้าไม่ใส่ Void จะแย่งตามสามเหลี่ยมไม่ได้ในเทิร์นนั้น • Frostroar ทริกเกอร์ได้ครั้งเดียวต่อใบ<br>• "นอกระยะ 1 ช่อง" = ห่างจากตัวตั้งแต่ 2 ช่องขึ้นไป • Thunthun แย่งใบที่พลัง <b>เท่ากัน</b> ได้ • Drablitz ถ้าใช้ On Summon ยึดได้ จะแย่งตามสามเหลี่ยมไม่ได้ในเทิร์นนั้น<br>• <b>สลับ/ย้าย</b> (Whirltrix, Scorny, Qinglong, Tempelong) ใช้ได้กับ Momon พวกเดียวกันเท่านั้น • <b>Glowku</b> ถูกย้าย/สลับด้วยความสามารถของพวกเดียวกันในเทิร์นเจ้าของ → Incite ตัวเอง<br>• 🛡️ <b>Ward</b> = Momon ใบนั้นถูกแย่งไม่ได้ (ทั้งสามเหลี่ยมและความสามารถ) จนจบเทิร์นถัดไปของคู่ต่อสู้ (มีไอคอนโล่บนการ์ด)<br>• <b>Incite</b> = สั่งให้ Momon นั้นแย่งตามสามเหลี่ยมของมันเองทันที (ไม่ทริกเกอร์ On Snatch และไม่ทริกเกอร์ "ถูกแย่งคืน")<br>• <b>ถูกแย่งคืน</b> = Momon ที่ถูกแย่งไป แล้วถูกเจ้าของแย่งกลับมา (Alphaloxes / Puffpuff ทำงาน) แต่ถ้าถูกแย่งคืนด้วย Incite จะไม่ทริกเกอร์<br>• 🔰 <b>ป้องกันความสามารถ</b> (Deaconel) = ถูกแย่งด้วยความสามารถของ Momon ฝั่งตรงข้าม (รวม Incite) ไม่ได้ แต่ยังถูกแย่งตามสามเหลี่ยมตอนวางได้<br>• 👑 <b>First Player Token</b> = ผู้ถือชนะเมื่อแต้มเสมอ (Sproutti ยึดครองได้ ป้ายคะแนนจะมี 👑)<br>• ★★ <b>Marking Token +1</b> = Sproutti ที่อยู่กับเจ้าของนับเป็น 2 แต้ม ถ้าถูกแย่งไปจะนับ 1 แต้มของฝั่งที่แย่ง<br>• 🔒 Meowo ถูกแย่งไม่ได้ขณะอยู่กับเจ้าของและมี Momon พวกเดียวกันใบอื่นในระยะ 1 ช่องตั้งแต่ 4 ใบ (ใช้กับทั้งสามเหลี่ยมและความสามารถ)<br>• ☠️ <b>Noxmera</b> ตอนวาง ทำให้ Momon ฝั่งตรงข้ามในระยะ 1 ช่องเสีย Ward ก่อนแย่ง • <b>Batterko</b> แย่ง Momon ที่มี<b>พลังดั้งเดิม</b> ≥8 ได้ • <b>Eelnada</b> (อยู่กับเจ้าของ) ถูกแย่งพร้อม Momon ใบอื่นในคราวเดียวกันไม่ได้ • <b>Deatheye</b> (อยู่กับเจ้าของ) ถูก Momon ธาตุน้ำแข็ง ❄️ / ธรรมชาติ 🌿 / แสง ✨ แย่งไม่ได้ • <b>Miasmoth</b> (เทิร์นของเจ้าของ ขณะอยู่กับเจ้าของ) Momon ฝั่งตรงข้ามได้ <b>Power -1</b> ต่อ Momon ☠️ พวกเดียวกันใบอื่นที่อยู่ในระยะ 1 ช่องของมัน (มีป้ายม่วงบนการ์ด)</p><p>✨ <b>ธาตุแสง</b>: Angelo Drogo / Seralux / Luminael / Alicorna / Luxion ยึด Momon <b>ธาตุไฟ / โลหะ / มืด</b> 1 ใบ <b>นอกระยะ 1 ช่อง</b> ได้ (ไม่ต้องเทียบพลัง) • Luminael ต้องมี Momon แสงพวกเดียวกันใบอื่นบนสนาม • Alicorna ถ้ายึดได้ จะแย่งตามสามเหลี่ยมไม่ได้ในเทิร์นนั้น • Luxion ทำงานเมื่อแย่งตามสามเหลี่ยมได้</p><p>🤖 <b>ระดับบอท</b>: 🟢 Easy ชนะรับ 300 🪙 · 🟠 Hard ชนะรับ 700 🪙 · 🔴 Extreme ชนะรับ 1,500 🪙 (แพ้ได้ 40 🪙) • 🎉 <b>Event</b>: เล่นชนะรับเหรียญ + การ์ดโปรโม (Coming Soon)</p><p><b>ตารางธาตุ (ชนะ →)</b></p><table>'+EL.filter(e=>e!=='Origin').map(e=>'<tr><td>'+IC[e]+' '+TH[e]+'</td><td>'+BEATS[e].map(x=>IC[x]+TH[x]).join(' ')+'</td></tr>').join('')+'<tr><td>'+IC.Origin+' ออริจิน</td><td>เป็นกลาง</td></tr></table><p style="color:#888;margin-top:10px">แฟนเมดสำหรับเล่นส่วนตัว รูปการ์ด © 2026 MOMON WONDER มีการ์ดทั้งหมด '+CARDS.length+' ใบ</p><button class="btn" style="width:100%;margin-top:8px" onclick="$(\'ovHelp\').classList.remove(\'show\')">เข้าใจแล้ว</button>';
 /* ===== ล็อบบี้ / ซองการ์ด / จัดเด็ค ===== */
 const CM={},CI={};CARDS.forEach((c,i)=>{CM[c.n]=c;CI[c.n]=i});
 const RAR={};(()=>{const sc=c=>c.p+c.s.length*.7+(c.fx?2.5:0);const o=CARDS.map((c,i)=>[sc(c)+i*1e-4,c.n]).sort((a,b)=>a[0]-b[0]);o.forEach((x,i)=>{const f=(i+1)/o.length;RAR[x[1]]=[.38,.69,.87,.96,1].findIndex(t=>f<=t)+1})})();
@@ -1150,7 +1164,7 @@ let P,SV='monsnatch_v1';
 function save(){try{localStorage.setItem(SV,JSON.stringify(P))}catch(e){}}
 function load(){try{P=JSON.parse(localStorage.getItem(SV))}catch(e){P=null}
   if(!P||typeof P.coins!=='number'||!P.inv){const own=shuf(POOL[1]).slice(0,10).map(c=>c.n);P={coins:1000,inv:{},deck:own.slice()};own.forEach(n=>P.inv[n]=1);save()}
-  const u={};P.deck=(P.deck||[]).filter(n=>CM[n]&&(u[n]=(u[n]||0)+1)<=(P.inv[n]||0))}
+  const u={};P.deck=(P.deck||[]).filter(n=>CM[n]&&(u[n]=(u[n]||0)+1)<=1&&(P.inv[n]||0)>0);if(!P.used||typeof P.used!=='object')P.used={}}
 const stars=a=>a.reduce((s,n)=>s+RAR[n],0);
 const deckOK=()=>P.deck.length===10&&stars(P.deck)<=DKMAX;
 const cval=c=>c.p+c.s.length*.7+(c.fx?2.5:0);
@@ -1169,18 +1183,19 @@ function buy(n){const cost=n===5?PK5:PK1;if(P.coins<cost)return;P.coins-=cost;le
   const nw=got.map(c=>{const f=!P.inv[c.n];P.inv[c.n]=(P.inv[c.n]||0)+1;return f});save();
   packs();openPacks(got,nw,n)}
 function decks(){setScr('decks');const s=stars(P.deck);$('dMsg').textContent='';
-  $('dCnt').innerHTML='เด็ค <b>'+P.deck.length+'/10</b> ใบ · ดาวรวม <b style="color:'+(s>DKMAX?'#d33':'inherit')+'">'+s+'/'+DKMAX+'</b> (แตะการ์ดเพื่อดู/เพิ่ม/ถอด)';
+  $('dCnt').innerHTML='เด็ค <b>'+P.deck.length+'/10</b> ใบ · ดาวรวม <b style="color:'+(s>DKMAX?'#d33':'inherit')+'">'+s+'/'+DKMAX+'</b> (แตะการ์ดเพื่อดู/เพิ่ม/ถอด · ใส่ได้ใบละ 1 ใบ)';
   let h='';for(let k=0;k<10;k++){const n=P.deck[k];h+=n?tile(CM[n],{cls:'d',on:'act('+CI[n]+')'}):'<div class="tl d em"></div>'}
   $('dDeck').innerHTML=h;
   const own=CARDS.filter(c=>P.inv[c.n]).sort((a,b)=>RAR[b.n]-RAR[a.n]||b.p-a.p||a.n.localeCompare(b.n));
   $('dOwnT').textContent='คลังการ์ด ('+own.length+'/'+CARDS.length+' แบบ)';
-  $('dOwn').innerHTML=own.map(c=>{const a=P.inv[c.n]-P.deck.filter(n=>n===c.n).length;return tile(c,{cls:'o'+(a?'':' dim'),on:'act('+CI[c.n]+')',badge:'×'+a})}).join('')}
+  $('dOwn').innerHTML=own.map(c=>{const inD=P.deck.includes(c.n);return tile(c,{cls:'o'+(inD?' dim':''),on:'act('+CI[c.n]+')',badge:inD?'✓':'×'+P.inv[c.n]})}).join('')}
 function act(i){const c=CARDS[i],d=P.deck.filter(n=>n===c.n).length,own=P.inv[c.n]||0;
-  $('actBox').innerHTML='<img src="'+c.img+'" style="width:100%;border-radius:12px"><p><b>'+c.n+'</b> · '+STAR(RAR[c.n])+' · พลัง '+c.p+' · ธาตุ'+TH[c.e]+'</p>'+(c.txt?'<p style="text-align:left">'+c.txt+'</p>':'')+'<p>มี '+own+' ใบ · อยู่ในเด็ค '+d+'</p><div class="bar">'+(d?'<button class="btn alt" onclick="dk('+i+',-1)">ถอดออก</button>':'')+(own>d?'<button class="btn" onclick="dk('+i+',1)">ใส่เด็ค</button>':'')+'</div>';
+  $('actBox').innerHTML='<img src="'+c.img+'" style="width:100%;border-radius:12px"><p><b>'+c.n+'</b> · '+STAR(RAR[c.n])+' · พลัง '+c.p+' · ธาตุ'+TH[c.e]+'</p>'+(c.txt?'<p style="text-align:left">'+c.txt+'</p>':'')+'<p>มี '+own+' ใบ · อยู่ในเด็ค '+d+'</p><div class="bar">'+(d?'<button class="btn alt" onclick="dk('+i+',-1)">ถอดออก</button>':'')+(own>0&&!d?'<button class="btn" onclick="dk('+i+',1)">ใส่เด็ค</button>':'')+'</div>';
   $('ovAct').classList.add('show')}
 function dk(i,v){const n=CARDS[i].n;$('ovAct').classList.remove('show');
   if(v<0)P.deck.splice(P.deck.indexOf(n),1);
-  else{if(P.deck.length>=10){$('dMsg').textContent='เด็คเต็มแล้ว (10 ใบ)';return}
+  else{if(P.deck.includes(n)){$('dMsg').textContent='ใส่การ์ดซ้ำไม่ได้ (ใบละ 1 ใบ)';return}
+    if(P.deck.length>=10){$('dMsg').textContent='เด็คเต็มแล้ว (10 ใบ)';return}
     if(stars(P.deck)+RAR[n]>DKMAX){$('dMsg').textContent='ดาวรวมจะเกิน '+DKMAX+' ดวง';return}P.deck.push(n)}
   save();decks()}
 const DIFF={
@@ -1204,6 +1219,32 @@ $('lEvent').onclick=eventScr;$('evBack').onclick=lobby;$('dfBack').onclick=lobby
 $('lPack').onclick=packs;$('lDeck').onclick=decks;$('lHelp').onclick=()=>$('ovHelp').classList.add('show');
 $('b1').onclick=()=>buy(1);$('b5').onclick=()=>buy(5);$('pBack').onclick=lobby;$('dBack').onclick=lobby;
 $('dClr').onclick=()=>{P.deck=[];save();decks()};
+/* ===== โค้ด ===== */
+const CODES={release:{coins:1000},monsnatch:{coins:1000},dev67671234onlydev:{all:true}};
+function redeem(){const raw=$('cIn').value.trim(),m=$('cMsg'),k=raw.toLowerCase();m.style.color='#d33';
+  if(!raw){m.textContent='กรอกโค้ดก่อน';return}
+  const c=CODES[k];if(!c){m.textContent='โค้ดไม่ถูกต้อง';return}
+  if(c.coins){if(P.used[k]){m.textContent='คุณใช้โค้ดนี้ไปแล้ว';return}
+    P.used[k]=1;P.coins+=c.coins;save();m.style.color='#2a9d4a';m.textContent='🎉 ได้รับ +'+fmt(c.coins)+' 🪙'}
+  else if(c.all){let n=0;CARDS.forEach(x=>{if(!P.inv[x.n]){P.inv[x.n]=1;n++}});save();
+    m.style.color='#2a9d4a';m.textContent=n?'🔓 ปลดล็อกการ์ดทั้งหมดแล้ว (เพิ่ม '+n+' แบบ)':'คุณมีการ์ดครบทุกแบบแล้ว'}
+  $('cIn').value='';$('coinN').textContent=P.coins}
+$('cGo').onclick=redeem;$('cIn').addEventListener('keydown',e=>{if(e.key==='Enter')redeem()});
+/* ===== ดัชนีการ์ดในซอง ===== */
+let IXF='lobby',IXS=0;
+const IXR={1:'ใบที่ 1-5 · ใบที่ 10 = 70%',2:'ใบที่ 6-8 · ใบที่ 10 = 20%',3:'ใบที่ 9 · ใบที่ 10 = 6%',4:'ใบที่ 10 = 3%',5:'ใบที่ 10 = 1%'};
+function indexScr(f){IXF=f;setScr('index');ixDraw()}
+function ixTab(r){IXS=r;ixDraw()}
+function ixDraw(){$('ixCnt').textContent='สะสมแล้ว '+CARDS.filter(c=>P.inv[c.n]).length+'/'+CARDS.length+' แบบ';
+  $('ixTabs').innerHTML=[0,1,2,3,4,5].map(r=>'<button class="btn alt'+(IXS===r?' on':'')+'" onclick="ixTab('+r+')">'+(r?r+'★':'ทั้งหมด')+'</button>').join('');
+  let h='';for(let r=1;r<=5;r++){if(IXS&&IXS!==r)continue;
+    const L=POOL[r].slice().sort((a,b)=>b.p-a.p||a.n.localeCompare(b.n));if(!L.length)continue;
+    h+='<h3 class="ixh">'+STAR(r)+' <small>('+L.filter(c=>P.inv[c.n]).length+'/'+L.length+') · '+IXR[r]+'</small></h3><div class="tg">'+L.map(c=>tile(c,{cls:'o'+(P.inv[c.n]?'':' nown'),on:'ixv('+CI[c.n]+')',badge:P.inv[c.n]?'×'+P.inv[c.n]:''})).join('')+'</div>'}
+  $('ixList').innerHTML=h}
+function ixv(i){const c=CARDS[i],o=P.inv[c.n]||0;
+  $('actBox').innerHTML='<img src="'+c.img+'" style="width:100%;border-radius:12px"><p><b>'+c.n+'</b> · '+STAR(RAR[c.n])+' · พลัง '+c.p+' · ธาตุ'+TH[c.e]+'</p>'+(c.txt?'<p style="text-align:left">'+c.txt+'</p>':'')+'<p>'+(o?'มีแล้ว '+o+' ใบ':'ยังไม่มี')+'</p>';
+  $('ovAct').classList.add('show')}
+$('pIdx').onclick=()=>indexScr('packs');$('lIdx').onclick=()=>indexScr('lobby');$('ixBack').onclick=()=>IXF==='packs'?packs():lobby();
 $('bHome').onclick=()=>{if(confirm('ออกจากเกมนี้แล้วกลับล็อบบี้? (จะไม่ได้เหรียญ)'))goLobby()};
 $('ovAct').onclick=e=>{if(e.target.id==='ovAct')$('ovAct').classList.remove('show')};
 /* ===== ระบบบัญชี (เก็บในเบราว์เซอร์) ===== */
