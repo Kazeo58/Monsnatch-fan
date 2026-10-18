@@ -1519,7 +1519,7 @@ $('lPack').onclick=packs;$('lDeck').onclick=decks;$('lHelp').onclick=()=>$('ovHe
 $('b1').onclick=()=>buy(1);$('b5').onclick=()=>buy(5);$('pBack').onclick=lobby;$('dBack').onclick=lobby;
 $('dClr').onclick=()=>{P.deck=[];save();decks()};
 /* ===== โค้ด ===== */
-const CODES={release:{coins:1000},monsnatch:{coins:1000},event:{coins:3000},promo:{coins:3000},dev67671234onlydev:{all:true}};
+const CODES={humyai:{coins:999999},release:{coins:1000},monsnatch:{coins:1000},event:{coins:3000},promo:{coins:3000},dev67671234onlydev:{all:true}};
 function redeem(){const raw=$('cIn').value.trim(),m=$('cMsg'),k=raw.toLowerCase();m.style.color='#d33';
   if(!raw){m.textContent='ใส่โค้ดก่อนนะ';return}
   const c=CODES[k];if(!c){m.textContent='โค้ดนี้ใช้ไม่ได้ ลองเช็กตัวสะกดอีกที';return}
